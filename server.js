@@ -1,12 +1,17 @@
 const { Client } = require('pg');
-require('nodemon')
+const haikus = require('./read_haikus')
+const cors = require('cors')
+const nodemon = require('nodemon')
 const express = require('express');
-const { users } = require('./random_users')
+const { users } = require('./random_users');
+const { nextTick } = require('process');
+const { application } = require('express');
 
 const port = 3000
 const app = express()
 
 app.use(express.json())
+app.use(cors())
 
 const client = new Client({
     host: 'localhost',
@@ -16,10 +21,20 @@ const client = new Client({
     database: 'dylanwu',
 })
 
+client.connect()
 
 app.put('/create-user', (req, res) => {
     console.log(req.body)
         // res.send(req)
+})
+app.put('/create-haiku', (req, res) => {
+    let { text, likes, dislikes, user_id } = req.body;
+    console.log(req.body)
+    client.query(`INSERT INTO haikus(text, likes, dislikes, user_id) VALUES('${text}',${likes},${dislikes},${user_id})`)
+
+    // client.query('SELECT * FROM haikus', (err, res) => { console.log(res.rows) });
+
+    res.send("put request");
 })
 
 app.post('/delete-user', (req, res) => {
@@ -36,7 +51,15 @@ app.get('/', (req, res) => {
 app.get('/validate-user', (req, res) => {})
 app.get('/get-followers', (req, res) => {})
 app.get('/get-following', (req, res) => {})
-app.get('/get-haikus', (req, res) => {})
+app.get('/get-haikus', (req, response) => {
+    client.query('SELECT * FROM haikus', (err, res) => {
+        if (!err) {
+            response.send(res.rows)
+        } else {
+            next(err)
+        }
+    });
+})
 app.get('/get-feed', (req, res) => {})
 
 
@@ -76,9 +99,10 @@ const selectAllUsers = () => {
     })
 }
 
-const newUser = (req, res) => {
 
-}
+// const newUser = (req, res) => {
+
+// }
 
 /*
     API
