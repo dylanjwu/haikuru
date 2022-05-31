@@ -2,11 +2,11 @@
   <div class="feed">
     <h3> Haikua feed</h3>
     <ul>
-      <li v-for="haiku in haikus" :key="haiku.text">
+      <li v-for="(haiku, index) in haikus" :key="haiku.text">
       <div class="post post-1">
         <p class="post-text">{{haiku.text}}</p>
-        <button class="btn like-btn" v-on:click="likeHaiku">Like</button>
-        <button class="btn dislike-btn" v-on:click="dislikeHaiku">Dislike</button>
+        <button class="btn like-btn" v-on:click="likeHaiku(index)">Like</button>
+        <button class="btn dislike-btn" v-on:click="dislikeHaiku(index)">Dislike</button>
         <p>Likes: {{ haiku.likes }} Dislikes: {{ haiku.dislikes }}</p>
       </div>
       </li>
@@ -29,6 +29,10 @@ export default {
   props: {
     msg: String
   },
+  mounted() {
+    this.populateList()
+  },
+
   data: function() {
     return {
       newText: "",
@@ -41,41 +45,79 @@ export default {
       this.formShowing = true
     },
     closeForm() {
-      this.formShowing = false
-      this.haikus.push(
-        {
-          text: this.newText, 
-          likes: 0, 
-          dislikes: 0, 
-          liked: false,
-          disliked: false,
-        })
-      this.newText = ""
-    },
-    likeHaiku(event) {
-      console.log(event.target) 
-      return 1
-      // if (haiku.liked === true) 
-      //   return
-      // haiku.liked = true
-      // if (haiku.disliked == true) {
-      //   haiku.dislikes--;
-      //   haiku.disliked = false
-      // }
 
+      this.formShowing = false
+       fetch('http://localhost:3000/create-haiku', {
+          method: 'PUT',
+          headers: {
+              'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            text: this.newText,
+            likes: 0,
+            dislikes: 0,
+            user_id: 1, //temp.
+          })
+      }).then(resp => resp)
+      .then(data => console.log(data.status === 200))
+      .catch(err => console.error(err));
+      // this.haikus.push(
+      //   {
+      //     text: this.newText, 
+      //     likes: 0, 
+      //     dislikes: 0, 
+      //     liked: false,
+      //     disliked: false,
+      //   })
+      this.newText = ""
+      this.populateList()
     },
-    dislikeHaiku(event) {
-      console.log(event.target) 
-      return 0
-      // if (haiku.disliked === true) 
-      //   return
-      // haiku.disliked = true
-      // if (haiku.disliked == true) {
-      //   haiku.dislikes--;
-      //   haiku.disliked = false
-      // }
-    }
+    likeHaiku(index) {
+      const haiku = this.haikus[index]
+
+      if (!haiku.liked){
+        haiku.liked = true
+        haiku.likes++;
+
+        if (haiku.disliked){
+          haiku.dislikes--
+          haiku.disliked = false
+        }
+      }
+    },
+    dislikeHaiku(index) {
+      const haiku = this.haikus[index]
+
+      if (!haiku.disliked){
+        haiku.disliked = true
+        haiku.dislikes++;
+
+        if (haiku.liked){
+          haiku.likes--
+          haiku.liked = false
+        }
+      }
   },
+  populateList() {
+    fetch('http://localhost:3000/get-haikus', {
+      headers: 
+        {
+          'Content-Type': 'application/json'
+        }
+      }) 
+    .then(resp => resp.json())
+    .then(data => {
+      data.forEach(haiku => {
+        haiku.disliked = false
+        haiku.liked = false
+      })
+      this.haikus = data
+      return this.haikus
+    })
+    .then(d => console.log(d))
+    .catch(err => console.error(err));
+  }
+  }
 }
 </script>
 
