@@ -1,0 +1,56 @@
+html * {
+    font-size: 9pt;
+}
+
+.feed {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.haiku-post-box {
+    border-radius: 4px;
+    margin: 5px 5px 5px 5px;
+    padding: 2px 2px 2px 2px;
+    text-align: center;
+    border: 1px solid black;
+    max-width: 200px;
+    min-width: 200px;
+}
+
+.haiku-post-input {
+    max-width: 200px;
+    min-width: 200px;
+    border: 1px solid black;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 3px 3px 3px 3px;
+}
+
+.like-button {
+    background-color: green;
+}
+
+.dislike-button {
+    background-color: red;
+}
+
+.post-bottom-box {
+    display: flex;
+    justify-content: end;
+    align-items: center;
+    gap: 3px;
+}
+
+.haiku-text {
+    padding-bottom: 10px;
+}
+
+.post-top-box {
+    display: flex;
+    align-items: center;
+    justify-content: start;
+    margin-bottom: 5px;
+}
