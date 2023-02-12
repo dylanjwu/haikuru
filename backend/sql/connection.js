@@ -2,11 +2,11 @@ const { rejects } = require('assert');
 const { Client } = require('pg')
 
 const client = new Client({
-    host: 'my-db-instance.cq0mezfgdqbr.us-east-1.rds.amazonaws.com',
-    port: 5432,
-    user: 'dylan',
-    password: 'dylan123',
-    database: 'my_db',
+    host: '',
+    port: ,
+    user: '',
+    password: '',
+    database: '',
 });
 
 const getConnection = () => {
